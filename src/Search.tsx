@@ -25,7 +25,7 @@ export const Search = ({ descriptors, selectedDescriptors, setSelectedDescriptor
 
                     <div>
                     {categoryDescriptors.sort((a, b) => {
-                        return (a.fields as DescriptorFields).category === 'positive' ? 1 : -1;
+                        return (a.fields as DescriptorFields).isPositive === 'positive' ? -1 : 1;
                     }).map((descriptor) => {
                         const fields = descriptor.fields as DescriptorFields;
 

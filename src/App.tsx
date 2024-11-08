@@ -8,7 +8,7 @@ import { uniqBy } from 'lodash'
 
 const client = createClient({
   space: 'qqfq12nkytwb',
-  accessToken: '5Yt9TX2rOuIzKQZCrmMtsCsHwZEdRzE2PA6ohR2YJQw'
+  accessToken: ''
 })
 
 function App() {

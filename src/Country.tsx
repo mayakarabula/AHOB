@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { CountryEntry, CountryFields, DescriptorFields } from "./types";
 
+const getIcon = (category: string) => {
+    if (category === 'Health care') {
+        return '🏥';
+    }
+    if (category === 'Laws') {
+        return '📔';
+    }
+}
+
 export const CountryArticle = ({ country }: { country: CountryEntry }) => {
     const [showNotes, setShowNotes] = useState(false);
     const [showLinks, setShowLinks] = useState(false);
@@ -19,14 +28,18 @@ export const CountryArticle = ({ country }: { country: CountryEntry }) => {
 
             <section className="pills">
                 {fields.descriptors.sort((a, b) => {
-                        return (a.fields as DescriptorFields).category === 'positive' ? 1 : -1;
+                        return (a.fields as DescriptorFields).isPositive === 'positive' ? -1 : 1;
                     }).map((descriptor, index) => {
                     const descriptorFields = descriptor.fields as DescriptorFields;
 
-                    return (showAllPills || index < 7) && <button key={descriptorFields.name} className={descriptorFields.isPositive + ' selected'}>{descriptorFields.name}</button>
+                    return (
+                        <button key={descriptorFields.name} className={descriptorFields.isPositive + ' selected'}>
+                            {getIcon(descriptorFields.category)} {descriptorFields.name}
+                        </button>
+                    )
                 })}
 
-                {fields.descriptors.length > 7 && <input type="button" value={showAllPills ? 'show less' : 'show more'} onClick={() => setShowAllPills(!showAllPills)} />}
+                {/* {fields.descriptors.length > 7 && <input type="button" value={showAllPills ? 'show less' : 'show more'} onClick={() => setShowAllPills(!showAllPills)} />} */}
             </section>
             <p>
                 {fields.notes && (
