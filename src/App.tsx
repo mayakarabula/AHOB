@@ -89,8 +89,7 @@ function App() {
 
         <span className="note">
           This project is made by community effort while we strive to make the
-          information accurate, some can be outdated or incorrect,{' '}
-          <a href="">read more about the project</a>
+          information accurate, some can be outdated or incorrect.
         </span>
 
         <Search
