@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash';
-import { getDescriptors, getIcon } from './Country';
+import { getIcon } from './Country';
 import {
   CountryEntry,
   CountryFields,
