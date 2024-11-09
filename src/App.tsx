@@ -3,67 +3,123 @@ import './App.css';
 import { Search } from './Search';
 import { CountryArticle } from './Country';
 import { createClient } from 'contentful';
-import { CountryEntry, CountryType, DescriptorEntry, DescriptorType } from './types';
-import { uniqBy } from 'lodash'
+import {
+  CountryEntry,
+  CountryType,
+  DescriptorEntry,
+  DescriptorType,
+} from './types';
+import { CountryCard } from './CountryCard';
+import config from './config.json';
 
-const client = createClient({
-  space: 'qqfq12nkytwb',
-  accessToken: ''
-})
+const client = createClient(config);
+
+const cacheKey = (search: string, selectedDescriptors: string[]) =>
+  search + selectedDescriptors.join(',');
+
+const cache = new Map<string, CountryEntry[]>();
 
 function App() {
-  const [descriptors, setDescriptors] = React.useState<DescriptorEntry[]>([])
-  const [countries, setCountries] = React.useState<CountryEntry[]>([])
-  const [selectedDescriptors, setSelectedDescriptors] = React.useState<string[]>([])
+  const [descriptors, setDescriptors] = React.useState<DescriptorEntry[]>([]);
+  const [countries, setCountries] = React.useState<CountryEntry[]>([]);
+  const [selectedDescriptors, setSelectedDescriptors] = React.useState<
+    string[]
+  >([]);
+  const [search, setSearch] = React.useState<string>('');
+  const [selectedCountry, setSelectedCountry] =
+    React.useState<CountryEntry | null>(null);
 
   useEffect(() => {
-    if (selectedDescriptors.length === 0) {
-      client.getEntries<CountryType>({
-        content_type: 'countryState'
-      })
-        .then((response) => setCountries(response.items))
-        .catch(console.error)
-    } else {
-      Promise.all(selectedDescriptors.map((descriptor) => {
-        return client.getEntries<CountryType>({
+    if (selectedDescriptors.length === 0 && search === '') {
+      if (cache.has(cacheKey(search, selectedDescriptors))) {
+        setCountries(cache.get(cacheKey(search, selectedDescriptors))!);
+        return;
+      }
+
+      client
+        .getEntries<CountryType>({
           content_type: 'countryState',
-          links_to_entry: descriptor
         })
-      })).then((responses) => {
-        const countries = uniqBy(responses.flatMap((response) => response.items), 'sys.id')
-        
-        setCountries(countries)
-      })
+        .then((response) => {
+          setCountries(response.items);
+          cache.set(cacheKey(search, selectedDescriptors), response.items);
+
+          console.log(cache);
+        })
+        .catch(console.error);
+    } else {
+      if (cache.has(cacheKey(search, selectedDescriptors))) {
+        setCountries(cache.get(cacheKey(search, selectedDescriptors))!);
+        return;
+      }
+
+      const params = { content_type: 'countryState' } as any;
+
+      if (selectedDescriptors.length > 0) {
+        params['metadata.tags.sys.id[all]'] = selectedDescriptors;
+      }
+
+      if (search !== '') {
+        params['fields.name[match]'] = search;
+      }
+
+      client
+        .getEntries<CountryType>(params)
+        .then((response) => {
+          setCountries(response.items);
+          cache.set(cacheKey(search, selectedDescriptors), response.items);
+        })
+        .catch(console.error);
     }
-   
-  }, [selectedDescriptors])
+  }, [selectedDescriptors, search]);
 
   useEffect(() => {
-    client.getEntries<DescriptorType>({
-      content_type: 'descriptor'
-    })
-    .then((response) => setDescriptors(response.items))
-    .catch(console.error)
-  }, [])
+    client
+      .getEntries<DescriptorType>({
+        content_type: 'descriptor',
+      })
+      .then((response) => setDescriptors(response.items))
+      .catch(console.error);
+  }, []);
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>🏳️‍⚧️ All hands on board 🏳️‍⚧️</h1>
-        
-        <span className='note'>This project is made by community effort while we strive to make the information accurate, some can be outdated or incorrect, <a href="">read more about the project</a></span>
 
-        <Search descriptors={descriptors} selectedDescriptors={selectedDescriptors} setSelectedDescriptors={setSelectedDescriptors} />
+        <span className="note">
+          This project is made by community effort while we strive to make the
+          information accurate, some can be outdated or incorrect,{' '}
+          <a href="">read more about the project</a>
+        </span>
+
+        <Search
+          descriptors={descriptors}
+          selectedDescriptors={selectedDescriptors}
+          setSelectedDescriptors={setSelectedDescriptors}
+          setSearch={setSearch}
+        />
       </header>
-      
+
       <section id="countries">
         <h2>Countries / States</h2>
 
-        {
-          countries.map((country) => (
-            <CountryArticle country={country} />
-          ))
-        } 
+        {countries.map((country) =>
+          selectedCountry?.sys.id === country.sys.id ? (
+            <CountryCard
+              key={country.sys.id}
+              descriptors={descriptors}
+              country={country}
+              setSelectedCountry={setSelectedCountry}
+            />
+          ) : (
+            <CountryArticle
+              country={country}
+              descriptors={descriptors}
+              setSelectedCountry={setSelectedCountry}
+            />
+          ),
+        )}
       </section>
     </div>
   );

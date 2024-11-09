@@ -18,7 +18,7 @@
   max-width: 600px;
 }
 
-input[type="text"] {
+input[type='text'] {
   background: transparent;
   border: 3px solid #ab44bd;
   padding: 9px 12px;
@@ -26,7 +26,8 @@ input[type="text"] {
   font-size: 18px;
 }
 
-input[type="button"] {
+input[type='button'],
+input[type='submit'] {
   background: #ab44bd;
   padding: 9px 12px;
   border-radius: 16px;
@@ -34,6 +35,12 @@ input[type="button"] {
   border: 3px solid #ab44bd;
   color: white;
   cursor: pointer;
+}
+
+input[type='button']:hover,
+input[type='submit']:hover {
+  background: #7e57ae;
+  border: 3px solid #7e57ae;
 }
 
 #search-input {
@@ -47,15 +54,15 @@ input[type="button"] {
 }
 
 @media screen and (min-width: 768px) {
-  #search-input input[type="button"] {
+  #search-input input[type='submit'] {
     margin-left: 10px;
   }
-  
+
   #search-input {
     display: block;
   }
 
-  #search-input input[type="text"] {
+  #search-input input[type='text'] {
     min-width: 300px;
     text-align: center;
   }
@@ -71,7 +78,7 @@ input[type="button"] {
   font-size: 18px;
 }
 
-.pills input[type="button"] {
+.pills input[type='button'] {
   padding: 6px 6px;
   border-radius: 16px;
   font-size: 15px;
@@ -88,13 +95,13 @@ input[type="button"] {
 }
 
 .pills button.negative {
-  border: 3px solid  #c25c64;
-  color:  #c25c64;
+  border: 3px solid #c25c64;
+  color: #c25c64;
 }
 
 .pills button.negative.selected {
-  border: 3px solid  #c25c64;
-  background-color:  #c25c64;
+  border: 3px solid #c25c64;
+  background-color: #c25c64;
   color: white;
 }
 
@@ -134,4 +141,17 @@ article.country h3 span {
 
 article.country input {
   margin-right: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  article.country h3 {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  article.country h3 span {
+    margin-bottom: 10px;
+    display: block;
+  }
 }
