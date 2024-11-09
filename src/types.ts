@@ -13,7 +13,6 @@ export type DescriptorEntry = Entry<DescriptorType>;
 
 export type CountryFields = {
   name: string;
-  region?: string[];
   notes?: string[];
   links?: string[];
   descriptors: DescriptorEntry[];

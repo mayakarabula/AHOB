@@ -13,6 +13,9 @@ export const getIcon = (category: string) => {
   if (category === 'Laws') {
     return '📔';
   }
+  if (category === 'Region') {
+    return '🌍';
+  }
 };
 
 export const getDescriptors = (
@@ -62,7 +65,7 @@ export const CountryArticle = ({
     <article className="country" key={fields.name}>
       <h3>
         <span>{fields.name}</span>{' '}
-        {fields.region && <span>({fields.region.join(', ')})</span>}
+        
         <input
           onClick={() => setSelectedCountry(country)}
           type="button"

@@ -38,10 +38,6 @@ export const CountryCard = (props: CountryCardProps) => {
       <h3>
         <span>{countryFields.name}</span>
 
-        {countryFields.region && (
-          <span>({countryFields.region?.join(', ')})</span>
-        )}
-
         <input
           type="button"
           value="close"
