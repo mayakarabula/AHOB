@@ -18,9 +18,12 @@ export const getIcon = (category: string) => {
   }
 };
 
+const maxDescriptors = 5;
+
 export const getDescriptors = (
   country: CountryEntry,
   descriptors: DescriptorEntry[],
+  showAllDescriptors: boolean,
 ) => {
   const countryDescriptors = country.metadata.tags
     .map((tag) =>
@@ -33,6 +36,10 @@ export const getDescriptors = (
 
   return countryDescriptors.map((descriptor, index) => {
     const descriptorFields = descriptor?.fields as DescriptorFields;
+
+    if (index > maxDescriptors && !showAllDescriptors) {
+      return null;
+    }
 
     return (
       <button
@@ -56,6 +63,7 @@ export const CountryArticle = ({
 }) => {
   const [showNotes, setShowNotes] = useState(false);
   const [showLinks, setShowLinks] = useState(false);
+  const [showAllDescriptors, setShowAllDescriptors] = useState(false);
 
   const fields = country.fields as CountryFields;
 
@@ -65,7 +73,6 @@ export const CountryArticle = ({
     <article className="country" key={fields.name}>
       <h3>
         <span>{fields.name}</span>{' '}
-        
         <input
           onClick={() => setSelectedCountry(country)}
           type="button"
@@ -74,7 +81,15 @@ export const CountryArticle = ({
       </h3>
 
       <section className="pills">
-        {getDescriptors(country, descriptors)}
+        {getDescriptors(country, descriptors, showAllDescriptors)}
+
+        {country.metadata.tags.length > maxDescriptors && (
+          <input
+            type="button"
+            value={showAllDescriptors ? 'hide' : 'show more'}
+            onClick={() => setShowAllDescriptors(!showAllDescriptors)}
+          />
+        )}
       </section>
 
       <p>
