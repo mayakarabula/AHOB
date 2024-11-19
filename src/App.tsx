@@ -11,6 +11,7 @@ import {
 } from './types';
 import { CountryCard } from './CountryCard';
 import config from './config.json';
+import { useSearchParams } from 'react-router-dom';
 
 const client = createClient(config);
 
@@ -20,14 +21,30 @@ const cacheKey = (search: string, selectedDescriptors: string[]) =>
 const cache = new Map<string, CountryEntry[]>();
 
 function App() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [descriptors, setDescriptors] = React.useState<DescriptorEntry[]>([]);
   const [countries, setCountries] = React.useState<CountryEntry[]>([]);
   const [selectedDescriptors, setSelectedDescriptors] = React.useState<
     string[]
-  >([]);
-  const [search, setSearch] = React.useState<string>('');
+  >(searchParams.get('descriptors')?.split(',') || []);
   const [selectedCountry, setSelectedCountry] =
     React.useState<CountryEntry | null>(null);
+  const [search, setSearch] = React.useState<string>(
+    searchParams.get('search') || '',
+  );
+
+  useEffect(() => {
+    const params: { search?: string; descriptors?: string } = {};
+
+    if (search.length > 0) {
+      params.search = search;
+    }
+    if (selectedDescriptors.length > 0) {
+      params.descriptors = selectedDescriptors.join(',');
+    }
+
+    setSearchParams(params);
+  }, [search, selectedDescriptors, setSearchParams]);
 
   useEffect(() => {
     if (selectedDescriptors.length === 0 && search === '') {
@@ -97,6 +114,7 @@ function App() {
           selectedDescriptors={selectedDescriptors}
           setSelectedDescriptors={setSelectedDescriptors}
           setSearch={setSearch}
+          search={search}
         />
       </header>
 

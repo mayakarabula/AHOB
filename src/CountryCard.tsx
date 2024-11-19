@@ -40,7 +40,7 @@ export const CountryCard = (props: CountryCardProps) => {
 
         <input
           type="button"
-          value="close"
+          value="hide details"
           onClick={() => props.setSelectedCountry(null)}
         />
       </h3>

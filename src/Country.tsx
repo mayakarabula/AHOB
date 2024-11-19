@@ -18,9 +18,9 @@ export const getIcon = (category: string) => {
   }
 };
 
-const maxDescriptors = 5;
+const maxDescriptors = 6;
 
-export const getDescriptors = (
+const getDescriptors = (
   country: CountryEntry,
   descriptors: DescriptorEntry[],
   showAllDescriptors: boolean,
@@ -37,7 +37,7 @@ export const getDescriptors = (
   return countryDescriptors.map((descriptor, index) => {
     const descriptorFields = descriptor?.fields as DescriptorFields;
 
-    if (index > maxDescriptors && !showAllDescriptors) {
+    if (index >= maxDescriptors && !showAllDescriptors) {
       return null;
     }
 
@@ -76,7 +76,7 @@ export const CountryArticle = ({
         <input
           onClick={() => setSelectedCountry(country)}
           type="button"
-          value="open"
+          value="show details"
         />
       </h3>
 

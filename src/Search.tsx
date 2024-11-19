@@ -7,6 +7,7 @@ type SearchProps = {
   selectedDescriptors: string[];
   setSelectedDescriptors: (selectedDescriptors: string[]) => void;
   setSearch: (search: string) => void;
+  search: string;
 };
 
 export const Search = ({
@@ -14,12 +15,13 @@ export const Search = ({
   selectedDescriptors,
   setSelectedDescriptors,
   setSearch,
+  search,
 }: SearchProps) => {
   const categories: { [category: string]: DescriptorEntry[] } = groupBy(
     descriptors,
     'fields.category',
   );
-  const [localSearch, setLocalSearch] = useState<string>('');
+  const [localSearch, setLocalSearch] = useState<string>(search);
   const [showDescriptors, setShowDescriptors] = useState<boolean>(false);
 
   return (
@@ -38,6 +40,7 @@ export const Search = ({
           onChange={(event) => {
             setLocalSearch(event.target.value);
           }}
+          value={localSearch}
         />
 
         <input type="submit" value="Search" />
