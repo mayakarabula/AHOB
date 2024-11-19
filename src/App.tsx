@@ -11,7 +11,7 @@ import {
 } from './types';
 import { CountryCard } from './CountryCard';
 import config from './config.json';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const client = createClient(config);
 
@@ -148,6 +148,11 @@ function App() {
         <span className="note">
           This project is made by community effort while we strive to make the
           information accurate, some can be outdated or incorrect.
+        </span>
+
+        <span className="note">
+          Not sure what LGR, MTF, FTM, HRT, etc means? Check our{' '}
+          <Link to="/glossary">glossary</Link>
         </span>
 
         <Search

@@ -1,0 +1,19 @@
+.glossary {
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+button {
+  background: #ab44bd;
+  padding: 9px 12px;
+  border-radius: 16px;
+  font-size: 18px;
+  border: 3px solid #ab44bd;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #7e57ae;
+  border: 3px solid #7e57ae;
+}
