@@ -15,10 +15,15 @@ import { useSearchParams } from 'react-router-dom';
 
 const client = createClient(config);
 
-const cacheKey = (search: string, selectedDescriptors: string[]) =>
-  search + selectedDescriptors.join(',');
+const cacheKey = (
+  search: string,
+  selectedDescriptors: string[],
+  searchSkip: number,
+) => search + selectedDescriptors.join(',') + searchSkip;
 
 const cache = new Map<string, CountryEntry[]>();
+
+const searchStep = 30;
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,6 +37,8 @@ function App() {
   const [search, setSearch] = React.useState<string>(
     searchParams.get('search') || '',
   );
+  const [searchSkip, setSearchSkip] = React.useState<number>(0);
+  const [searchTotal, setSearchTotal] = React.useState<number>(0);
 
   useEffect(() => {
     const params: { search?: string; descriptors?: string } = {};
@@ -47,30 +54,48 @@ function App() {
   }, [search, selectedDescriptors, setSearchParams]);
 
   useEffect(() => {
+    setSearchSkip(0);
+  }, [search, selectedDescriptors]);
+
+  useEffect(() => {
     if (selectedDescriptors.length === 0 && search === '') {
-      if (cache.has(cacheKey(search, selectedDescriptors))) {
-        setCountries(cache.get(cacheKey(search, selectedDescriptors))!);
+      if (cache.has(cacheKey(search, selectedDescriptors, searchSkip))) {
+        setCountries(
+          cache.get(cacheKey(search, selectedDescriptors, searchSkip))!,
+        );
         return;
       }
 
       client
         .getEntries<CountryType>({
           content_type: 'countryState',
+          order: 'fields.name' as any,
+          // limit: searchStep,
+          // skip: searchSkip,
         })
         .then((response) => {
-          setCountries(response.items);
-          cache.set(cacheKey(search, selectedDescriptors), response.items);
-
-          console.log(cache);
+          setCountries([...countries, ...response.items]);
+          setSearchTotal(response.total);
+          cache.set(
+            cacheKey(search, selectedDescriptors, searchSkip),
+            response.items,
+          );
         })
         .catch(console.error);
     } else {
-      if (cache.has(cacheKey(search, selectedDescriptors))) {
-        setCountries(cache.get(cacheKey(search, selectedDescriptors))!);
+      if (cache.has(cacheKey(search, selectedDescriptors, searchSkip))) {
+        setCountries(
+          cache.get(cacheKey(search, selectedDescriptors, searchSkip))!,
+        );
         return;
       }
 
-      const params = { content_type: 'countryState' } as any;
+      const params = {
+        content_type: 'countryState',
+        order: 'fields.name',
+        // limit: searchStep,
+        // skip: searchSkip,
+      } as any;
 
       if (selectedDescriptors.length > 0) {
         params['metadata.tags.sys.id[all]'] = selectedDescriptors;
@@ -83,12 +108,16 @@ function App() {
       client
         .getEntries<CountryType>(params)
         .then((response) => {
-          setCountries(response.items);
-          cache.set(cacheKey(search, selectedDescriptors), response.items);
+          setCountries([...countries, ...response.items]);
+          setSearchTotal(response.total);
+          cache.set(
+            cacheKey(search, selectedDescriptors, searchSkip),
+            response.items,
+          );
         })
         .catch(console.error);
     }
-  }, [selectedDescriptors, search]);
+  }, [selectedDescriptors, search, searchSkip, countries]);
 
   useEffect(() => {
     client
@@ -98,6 +127,18 @@ function App() {
       .then((response) => setDescriptors(response.items))
       .catch(console.error);
   }, []);
+
+  const handleScroll = () => {
+    const element = document.getElementsByTagName('html')[0];
+    const bottom =
+      element.scrollHeight - element.scrollTop === element.clientHeight;
+
+    if (bottom && searchSkip + searchStep < searchTotal) {
+      setSearchSkip(searchSkip + searchStep);
+    }
+  };
+
+  document.getElementsByTagName('body')[0].onscroll = handleScroll;
 
   return (
     <div className="App">

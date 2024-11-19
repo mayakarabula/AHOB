@@ -54,7 +54,11 @@ export const Search = ({
         <input
           type="button"
           value="Clear filters"
-          onClick={() => setSelectedDescriptors([])}
+          onClick={() => {
+            setSelectedDescriptors([]);
+            setLocalSearch('');
+            setSearch('');
+          }}
         />
       </form>
 

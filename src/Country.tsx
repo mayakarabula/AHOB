@@ -18,7 +18,7 @@ export const getIcon = (category: string) => {
   }
 };
 
-const maxDescriptors = 6;
+const maxDescriptors = 5;
 
 const getDescriptors = (
   country: CountryEntry,
@@ -76,7 +76,7 @@ export const CountryArticle = ({
         <input
           onClick={() => setSelectedCountry(country)}
           type="button"
-          value="show details"
+          value="show all details"
         />
       </h3>
 
