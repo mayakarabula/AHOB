@@ -1,6 +1,11 @@
-.glossary {
+.Resources {
   max-width: 1000px;
-  margin: 20px auto;
+  margin: 10px auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
 }
 
 button {
@@ -16,4 +21,8 @@ button {
 button:hover {
   background: #7e57ae;
   border: 3px solid #7e57ae;
+}
+
+li {
+  margin-bottom: 5px;
 }

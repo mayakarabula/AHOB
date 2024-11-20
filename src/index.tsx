@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
-import Glossary from './Glossary';
+import Resources from './Resources';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -16,8 +16,8 @@ const router = createHashRouter([
     element: <App />,
   },
   {
-    path: '/glossary',
-    element: <Glossary />,
+    path: '/resources',
+    element: <Resources />,
   },
 ]);
 

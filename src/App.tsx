@@ -12,6 +12,7 @@ import {
 import { CountryCard } from './CountryCard';
 import config from './config.json';
 import { Link, useSearchParams } from 'react-router-dom';
+import './index.css';
 
 const client = createClient(config);
 
@@ -152,7 +153,7 @@ function App() {
 
         <span className="note">
           Not sure what LGR, MTF, FTM, HRT, etc means? Check our{' '}
-          <Link to="/glossary">glossary</Link>
+          <Link to="/resources">resources page</Link>
         </span>
 
         <Search
