@@ -7,6 +7,7 @@ type SearchProps = {
   selectedDescriptors: string[];
   setSelectedDescriptors: (selectedDescriptors: string[]) => void;
   setSearch: (search: string) => void;
+  setPage: (page: string) => void;
   search: string;
 };
 
@@ -15,6 +16,7 @@ export const Search = ({
   selectedDescriptors,
   setSelectedDescriptors,
   setSearch,
+  setPage,
   search,
 }: SearchProps) => {
   const categories: { [category: string]: DescriptorEntry[] } = groupBy(
@@ -32,6 +34,7 @@ export const Search = ({
         onSubmit={(event) => {
           event.preventDefault();
           setSearch(localSearch);
+          setPage('1');
         }}
       >
         <input
@@ -55,6 +58,7 @@ export const Search = ({
           type="button"
           value="Clear filters"
           onClick={() => {
+            setPage('1');
             setSelectedDescriptors([]);
             setLocalSearch('');
             setSearch('');
@@ -90,6 +94,8 @@ export const Search = ({
                               : '')
                           }
                           onClick={() => {
+                            setPage('1');
+
                             if (
                               selectedDescriptors.includes(descriptor.sys.id)
                             ) {

@@ -168,3 +168,15 @@ article.country input {
     display: block;
   }
 }
+
+#pagination input[type='button'] {
+  margin-right: 10px;
+  background-color: transparent;
+  border: 3px solid #ab44bd;
+  color: #ab44bd;
+}
+
+#pagination input[type='button'].selected {
+  background-color: #ab44bd;
+  color: white;
+}

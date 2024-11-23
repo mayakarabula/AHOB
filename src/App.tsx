@@ -19,12 +19,12 @@ const client = createClient(config);
 const cacheKey = (
   search: string,
   selectedDescriptors: string[],
-  searchSkip: number,
-) => search + selectedDescriptors.join(',') + searchSkip;
+  page: string,
+) => search + selectedDescriptors.join(',') + page;
 
-const cache = new Map<string, CountryEntry[]>();
+const cache = new Map<string, { countries: CountryEntry[]; total: number }>();
 
-const searchStep = 30;
+const searchStep = 20;
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,11 +38,14 @@ function App() {
   const [search, setSearch] = React.useState<string>(
     searchParams.get('search') || '',
   );
-  const [searchSkip, setSearchSkip] = React.useState<number>(0);
   const [searchTotal, setSearchTotal] = React.useState<number>(0);
+  const pageParam = searchParams.get('page') ?? '1';
+  const [page, setPage] = React.useState<string>(pageParam);
 
   useEffect(() => {
-    const params: { search?: string; descriptors?: string } = {};
+    const params: { search?: string; descriptors?: string; page: string } = {
+      page,
+    };
 
     if (search.length > 0) {
       params.search = search;
@@ -52,17 +55,16 @@ function App() {
     }
 
     setSearchParams(params);
-  }, [search, selectedDescriptors, setSearchParams]);
-
-  useEffect(() => {
-    setSearchSkip(0);
-  }, [search, selectedDescriptors]);
+  }, [search, selectedDescriptors, setSearchParams, page]);
 
   useEffect(() => {
     if (selectedDescriptors.length === 0 && search === '') {
-      if (cache.has(cacheKey(search, selectedDescriptors, searchSkip))) {
+      if (cache.has(cacheKey(search, selectedDescriptors, page))) {
         setCountries(
-          cache.get(cacheKey(search, selectedDescriptors, searchSkip))!,
+          cache.get(cacheKey(search, selectedDescriptors, page))!.countries,
+        );
+        setSearchTotal(
+          cache.get(cacheKey(search, selectedDescriptors, page))!.total,
         );
         return;
       }
@@ -71,22 +73,25 @@ function App() {
         .getEntries<CountryType>({
           content_type: 'countryState',
           order: 'fields.name' as any,
-          // limit: searchStep,
-          // skip: searchSkip,
+          limit: searchStep,
+          skip: (+page - 1) * searchStep,
         })
         .then((response) => {
           setCountries([...countries, ...response.items]);
           setSearchTotal(response.total);
-          cache.set(
-            cacheKey(search, selectedDescriptors, searchSkip),
-            response.items,
-          );
+          cache.set(cacheKey(search, selectedDescriptors, page), {
+            countries: response.items,
+            total: response.total,
+          });
         })
         .catch(console.error);
     } else {
-      if (cache.has(cacheKey(search, selectedDescriptors, searchSkip))) {
+      if (cache.has(cacheKey(search, selectedDescriptors, page))) {
         setCountries(
-          cache.get(cacheKey(search, selectedDescriptors, searchSkip))!,
+          cache.get(cacheKey(search, selectedDescriptors, page))!.countries,
+        );
+        setSearchTotal(
+          cache.get(cacheKey(search, selectedDescriptors, page))!.total,
         );
         return;
       }
@@ -94,8 +99,8 @@ function App() {
       const params = {
         content_type: 'countryState',
         order: 'fields.name',
-        // limit: searchStep,
-        // skip: searchSkip,
+        limit: searchStep,
+        skip: (+page - 1) * searchStep,
       } as any;
 
       if (selectedDescriptors.length > 0) {
@@ -111,14 +116,14 @@ function App() {
         .then((response) => {
           setCountries([...countries, ...response.items]);
           setSearchTotal(response.total);
-          cache.set(
-            cacheKey(search, selectedDescriptors, searchSkip),
-            response.items,
-          );
+          cache.set(cacheKey(search, selectedDescriptors, page), {
+            countries: response.items,
+            total: response.total,
+          });
         })
         .catch(console.error);
     }
-  }, [selectedDescriptors, search, searchSkip, countries]);
+  }, [selectedDescriptors, search, page, countries]);
 
   useEffect(() => {
     client
@@ -128,18 +133,6 @@ function App() {
       .then((response) => setDescriptors(response.items))
       .catch(console.error);
   }, []);
-
-  const handleScroll = () => {
-    const element = document.getElementsByTagName('html')[0];
-    const bottom =
-      element.scrollHeight - element.scrollTop === element.clientHeight;
-
-    if (bottom && searchSkip + searchStep < searchTotal) {
-      setSearchSkip(searchSkip + searchStep);
-    }
-  };
-
-  document.getElementsByTagName('body')[0].onscroll = handleScroll;
 
   return (
     <div className="App">
@@ -161,6 +154,7 @@ function App() {
           selectedDescriptors={selectedDescriptors}
           setSelectedDescriptors={setSelectedDescriptors}
           setSearch={setSearch}
+          setPage={setPage}
           search={search}
         />
       </header>
@@ -184,6 +178,22 @@ function App() {
             />
           ),
         )}
+      </section>
+
+      <section id="pagination">
+        {new Array(Math.ceil(searchTotal / searchStep))
+          .fill(0)
+          .map((_, index) => (
+            <input
+              type="button"
+              className={index + 1 === +page ? 'selected' : ''}
+              onClick={() => {
+                setPage((index + 1).toString());
+                document.getElementsByTagName('html')[0].scrollTo(0, 0);
+              }}
+              value={index + 1}
+            />
+          ))}
       </section>
     </div>
   );
