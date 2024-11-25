@@ -57,6 +57,7 @@ export const Search = ({
         <input
           type="button"
           value="Clear filters"
+          disabled={selectedDescriptors.length === 0 && search === ''}
           onClick={() => {
             setPage('1');
             setSelectedDescriptors([]);

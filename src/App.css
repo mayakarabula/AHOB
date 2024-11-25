@@ -38,6 +38,13 @@ input[type='submit'] {
   cursor: pointer;
 }
 
+input[type='button']:disabled,
+input[type='button']:disabled:hover {
+  background-color: #ef96ff;
+  border-color: #ef96ff;
+  cursor: default;
+}
+
 input[type='button']:hover,
 input[type='submit']:hover {
   background: #7e57ae;

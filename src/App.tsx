@@ -160,7 +160,7 @@ function App() {
       </header>
 
       <section id="countries">
-        <h2>Countries / States</h2>
+        <h2>Countries / States ({searchTotal})</h2>
 
         {countries.map((country) =>
           selectedCountry?.sys.id === country.sys.id ? (
