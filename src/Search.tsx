@@ -50,7 +50,11 @@ export const Search = ({
 
         <input
           type="button"
-          value={showDescriptors ? 'Hide filters' : 'Show filters'}
+          value={
+            showDescriptors
+              ? `Hide filters ${selectedDescriptors.length > 0 ? `(${selectedDescriptors.length})` : ''}`
+              : `Show filters ${selectedDescriptors.length > 0 ? `(${selectedDescriptors.length})` : ''}`
+          }
           onClick={() => setShowDescriptors(!showDescriptors)}
         />
 
